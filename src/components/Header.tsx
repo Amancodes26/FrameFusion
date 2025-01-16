@@ -1,5 +1,7 @@
+"use client";
 import Link from "next/link";
 import React from "react";
+import { Button } from "./ui/button";
 
 export default function Header() {
   return (
@@ -7,6 +9,9 @@ export default function Header() {
       <Link href="/">
         <h2 className="font-bold text-xl">FrameFusion</h2>
       </Link>
+      <div className="_menu">
+        <Button>Login</Button>
+      </div>
     </div>
   );
 }
