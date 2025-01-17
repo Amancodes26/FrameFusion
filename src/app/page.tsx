@@ -55,7 +55,7 @@ export default function Home() {
           }}
           transition={{ duration: 0.35, delay: 0.7 }}
         >
-          <Link href="/">
+          <Link href="/create">
             <Button className="font-bold px-8 py-6 text-lg">Coming Soon</Button>
           </Link>
         </motion.div>
