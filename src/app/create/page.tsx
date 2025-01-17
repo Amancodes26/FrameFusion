@@ -3,10 +3,8 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -16,11 +14,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 export default function page() {
-  const [outputImg, setOutputImg] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  // const [outputImg, setOutputImg] = useState<string | null>(null);
+  // const [loading, setLoading] = useState<boolean>(false);
 
   const formSchema = z.object({
-    prompt: z.string().min(7,{message:"Prompt must be atleast 7 characters long!"}),
+    prompt: z
+      .string()
+      .min(7, { message: "Prompt must be atleast 7 characters long!" }),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -30,9 +30,7 @@ export default function page() {
     },
   });
 
-  // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
-    
     console.log(values);
   }
 
@@ -45,13 +43,16 @@ export default function page() {
         </p>
       </div>
       <div className=" flex border border-green-500 w-full h-full gap-3">
-        <div className="__form flex-[2] border border-yellow-500 flex justify-center items-start flex-col">
+        <div className="__form flex-[2]  flex justify-center items-start flex-col">
           <p className="text-left">
             Type you prompt below to create any Stunning Visuals
           </p>
           <div className="flex gap-2 w-full ">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="w-full   flex gap-2 ">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="w-full   flex gap-2 "
+              >
                 <FormField
                   control={form.control}
                   name="prompt"
@@ -73,7 +74,7 @@ export default function page() {
             </Form>
           </div>
         </div>
-        <div className="__output flex-[1] border border-yellow-400 bg-white/5  rounded-lg"></div>
+        <div className="__output flex-[1]  bg-white/5  rounded-lg"></div>
       </div>
     </div>
   );
