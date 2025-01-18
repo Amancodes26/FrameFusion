@@ -3,7 +3,7 @@ import prisma from "@/utils/prisma";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
-export const maxDuration = 40;
+export const maxDuration = 50;
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session) {

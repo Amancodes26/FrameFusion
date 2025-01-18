@@ -3,7 +3,7 @@ import { Post } from "@prisma/client";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
-export default function page() {
+export default function Page() {
   const [loading, setloading] = useState<boolean>(true);
   const [posts, setPosts] = useState<Post[]>([]);
   const fetchPosts = async () => {
