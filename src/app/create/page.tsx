@@ -14,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
 
-export default function page() {
+export default function Page() {
   const [outputImg, setOutputImg] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
