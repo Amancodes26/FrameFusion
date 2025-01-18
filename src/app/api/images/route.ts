@@ -7,7 +7,7 @@ export const maxDuration = 40;
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "You are Unauthorized" }, { status: 401 });
   }
   const { prompt } = await request.json();
 
@@ -39,4 +39,32 @@ export async function POST(request: NextRequest) {
     }
   })
   return NextResponse.json({ url: imageUrl });
+}
+export async function GET() {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return NextResponse.json(
+      { error: "You are Unauthorized" },
+      { status: 401 }
+    );
+  }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: session.user.id,
+    },
+  });
+
+  if (!user) {
+    return NextResponse.json({ error: "No user found" }, { status: 401 });
+  }
+
+  const posts = await prisma.post.findMany({
+    where: {
+      userId: user.id,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return NextResponse.json(posts);
 }
