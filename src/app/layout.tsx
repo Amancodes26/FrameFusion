@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/Header";
 import Provider from "@/Provider";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,25 +24,6 @@ export const metadata: Metadata = {
     title: "FrameFusion - Free AI Image Generation",
     description:
       "Effortlessly generate high-quality images from text using FrameFusion's AI-powered tool.",
-    images: [
-      {
-        url: "/images/framefusion-preview.jpg", //replace to org url
-        alt: "Preview of an AI-generated image from FrameFusion",
-      },
-    ],
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "FrameFusion - Free AI Image Generation",
-    description:
-      "Effortlessly generate high-quality images from text using FrameFusion's AI-powered tool.",
-    images: [
-      {
-        url: "/images/framefusion-twitter.jpg", //replace to org url
-        alt: "Preview of an AI-generated image from FrameFusion",
-      },
-    ],
   },
 };
 
@@ -57,8 +39,9 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="dark">
           <Provider>
-          <Header/>
-         {children}
+            <Header />
+            {children}
+            <Toaster/>
           </Provider>
         </ThemeProvider>
       </body>

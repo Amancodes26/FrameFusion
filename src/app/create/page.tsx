@@ -13,11 +13,13 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Page() {
   const [outputImg, setOutputImg] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const { toast } = useToast();
   const formSchema = z.object({
     prompt: z
       .string()
@@ -38,9 +40,15 @@ export default function Page() {
         method: "POST",
         body: JSON.stringify(values),
       });
+
       const data = await response.json();
-      console.log(data.url);
-      setOutputImg(data.url);
+
+      if (response.status == 200) {
+        setOutputImg(data.url);
+      } else {
+        console.log(data.error);
+        toast({ variant: "destructive", description: data.error });
+      }
     } catch (error) {
       console.error(error);
     } finally {
