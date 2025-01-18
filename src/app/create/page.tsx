@@ -61,7 +61,7 @@ export default function Create() {
             className="flex gap-2"
           >
             <Input
-              placeholder="a cat and dog marriage in India ..."
+              placeholder="Describe the image you want to create..."
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               disabled={loading}
@@ -117,7 +117,7 @@ export default function Create() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
-              className="relative aspect-square bg-card/50 backdrop-blur-sm rounded-2xl overflow-hidden"
+              className="relative aspect-square bg-card/50 backdrop-blur-sm rounded-1xl overflow-hidden"
             >
               <img
                 src={image}
