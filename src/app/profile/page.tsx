@@ -29,11 +29,13 @@ export default function Page() {
         <div className="flex items-center justify-center h-[50vh]">
           <div className="flex flex-col items-center gap-4">
             <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-            <p className="text-muted-foreground animate-pulse">Loading your creations...</p>
+            <p className="text-muted-foreground animate-pulse">
+              Loading your creations...
+            </p>
           </div>
         </div>
       ) : (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}

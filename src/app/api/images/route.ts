@@ -7,7 +7,10 @@ export const maxDuration = 50;
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session) {
-    return NextResponse.json({ error: "You are Unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { error: "You are Unauthorized" },
+      { status: 401 },
+    );
   }
   const { prompt } = await request.json();
 
@@ -16,8 +19,8 @@ export async function POST(request: NextRequest) {
       id: session.user.id,
     },
   });
-  if(!user){
-    return  NextResponse.json({error:"NO USER FOUND"}, {status:401})
+  if (!user) {
+    return NextResponse.json({ error: "NO USER FOUND" }, { status: 401 });
   }
 
   function generateRandomNumber(): number {
@@ -25,19 +28,19 @@ export async function POST(request: NextRequest) {
   }
   const randomSeed = generateRandomNumber();
   const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(
-    prompt
+    prompt,
   )}?seed=${randomSeed}&width=512&height=512&noLogo=True`;
 
   await fetch(imageUrl);
 
   await prisma.post.create({
-    data:{
-      prompt:prompt,
-      url:imageUrl,
-      userId:session.user.id,
-      seed:randomSeed,
-    }
-  })
+    data: {
+      prompt: prompt,
+      url: imageUrl,
+      userId: session.user.id,
+      seed: randomSeed,
+    },
+  });
   return NextResponse.json({ url: imageUrl });
 }
 export async function GET() {
@@ -45,7 +48,7 @@ export async function GET() {
   if (!session) {
     return NextResponse.json(
       { error: "You are Unauthorized" },
-      { status: 401 }
+      { status: 401 },
     );
   }
 

@@ -48,7 +48,8 @@ export default function Create() {
             Create Your Image
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Transform your ideas into stunning visuals using our AI-powered image generation
+            Transform your ideas into stunning visuals using our AI-powered
+            image generation
           </p>
         </div>
 
@@ -107,7 +108,9 @@ export default function Create() {
             <div className="aspect-square bg-card/50 backdrop-blur-sm rounded-2xl flex items-center justify-center">
               <div className="flex flex-col items-center gap-4">
                 <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-                <p className="text-muted-foreground animate-pulse">Creating your masterpiece...</p>
+                <p className="text-muted-foreground animate-pulse">
+                  Creating your masterpiece...
+                </p>
               </div>
             </div>
           )}
