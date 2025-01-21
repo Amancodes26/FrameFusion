@@ -20,6 +20,11 @@ export default function Header() {
       <Link href="/">
         <h2 className="font-bold text-xl">FrameFusion</h2>
       </Link>
+      <div className="flex justify-center items-center gap-8">
+        <Link href="/pricing">
+          <h2 className="font-bold  ">Pricing</h2>
+        </Link>
+      </div>
       {initialLoading && status == "loading" ? (
         <BiLoaderCircle className="animate-spin" />
       ) : !session ? (
