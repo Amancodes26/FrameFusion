@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 export default function Page() {
+  
   const [loading, setloading] = useState<boolean>(true);
   const [posts, setPosts] = useState<Post[]>([]);
   const fetchPosts = async () => {
