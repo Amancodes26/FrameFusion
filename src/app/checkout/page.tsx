@@ -1,13 +1,13 @@
-"use client"
-import { useSearchParams, useRouter } from 'next/navigation';
-import { Suspense, useEffect, useState, useRef } from 'react';
+"use client";
+import { useSearchParams, useRouter } from "next/navigation";
+import { Suspense, useEffect, useState, useRef } from "react";
 import { Loader2 } from "lucide-react";
 import Script from "next/script";
 
 function CheckoutContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const amount = searchParams.get('amount');
+  const amount = searchParams.get("amount");
   const [isLoading, setIsLoading] = useState(true);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const idRef = useRef<string | undefined>(undefined);
@@ -64,7 +64,7 @@ function CheckoutContent() {
           const res = await result.json();
           if (res.isOk) {
             alert("Payment successful!");
-            router.push("/dashboard"); // or wherever you want to redirect
+            router.push("/"); // or wherever you want to redirect
           } else {
             alert(res.message);
           }
@@ -91,7 +91,7 @@ function CheckoutContent() {
           {isLoading ? "Processing" : "Payment Processing"}
         </h2>
         <p className="text-gray-400">
-          {isLoading 
+          {isLoading
             ? "Please wait while we prepare your payment..."
             : "Your payment is being processed securely"}
         </p>
@@ -104,9 +104,9 @@ function CheckoutContent() {
           <div className="space-y-4 w-full">
             <div className="flex justify-between items-center p-4 bg-gray-700/50 rounded-lg">
               <span className="text-gray-300">Amount</span>
-              <span className="text-white font-bold">₹{amount || '0'}</span>
+              <span className="text-white font-bold">₹{amount || "0"}</span>
             </div>
-            
+
             <button
               onClick={processPayment}
               disabled={paymentLoading}
@@ -154,7 +154,7 @@ export default function Page() {
         src="https://checkout.razorpay.com/v1/checkout.js"
       />
       <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-        <Suspense 
+        <Suspense
           fallback={
             <div className="flex items-center justify-center">
               <Loader2 className="h-12 w-12 text-blue-500 animate-spin" />
