@@ -4,6 +4,17 @@ import { Suspense, useEffect, useState, useRef } from "react";
 import { Loader2 } from "lucide-react";
 import Script from "next/script";
 
+interface RazorpayInstance {
+  open: () => void;
+  on: (event: string, callback: (response: unknown) => void) => void;
+}
+
+interface Window {
+  Razorpay: {
+    new (options: RazorpayOptions): RazorpayInstance;
+  };
+}
+
 interface RazorpayResponse {
   razorpay_payment_id: string;
   razorpay_order_id: string;
@@ -98,9 +109,9 @@ function CheckoutContent() {
         theme: { color: "#3399cc" },
       };
 
-      const paymentObject = new (window as any).Razorpay(options);
-      paymentObject.on("payment.failed", function (response: RazorpayError) {
-        alert(response.error.description);
+      const paymentObject = new window.Razorpay(options);
+      paymentObject.on("payment.failed", function (response: unknown) {
+        alert((response as RazorpayError).error.description);
       });
       paymentObject.open();
     } catch (error) {

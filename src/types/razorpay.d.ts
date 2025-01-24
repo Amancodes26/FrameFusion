@@ -1,3 +1,8 @@
+interface RazorpayInstance {
+  on(event: string, handler: (response: unknown) => void): void;
+  open(): void;
+}
+
 interface Window {
-  Razorpay: any; // This is acceptable as it's a third-party library
+  Razorpay: new (options: RazorpayOptions) => RazorpayInstance;
 }
