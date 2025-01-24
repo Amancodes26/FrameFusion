@@ -4,16 +4,16 @@ import { Suspense, useEffect, useState, useRef } from "react";
 import { Loader2 } from "lucide-react";
 import Script from "next/script";
 
-interface RazorpayInstance {
-  open: () => void;
-  on: (event: string, callback: (response: unknown) => void) => void;
-}
+// interface RazorpayInstance {
+//   open: () => void;
+//   on: (event: string, callback: (response: unknown) => void) => void;
+// }
 
-interface Window {
-  Razorpay: {
-    new (options: RazorpayOptions): RazorpayInstance;
-  };
-}
+// interface Window {
+//   Razorpay: {
+//     new (options: RazorpayOptions): RazorpayInstance;
+//   };
+// }
 
 interface RazorpayResponse {
   razorpay_payment_id: string;
