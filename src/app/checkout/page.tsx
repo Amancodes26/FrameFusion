@@ -4,6 +4,32 @@ import { Suspense, useEffect, useState, useRef } from "react";
 import { Loader2 } from "lucide-react";
 import Script from "next/script";
 
+interface RazorpayResponse {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+}
+
+interface RazorpayError {
+  error: {
+    description: string;
+    // Add other error properties if needed
+  };
+}
+
+interface RazorpayOptions {
+  key: string | undefined;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  order_id: string | undefined;
+  handler: (response: RazorpayResponse) => Promise<void>;
+  theme: {
+    color: string;
+  };
+}
+
 function CheckoutContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -41,14 +67,14 @@ function CheckoutContent() {
   const processPayment = async () => {
     setPaymentLoading(true);
     try {
-      const options = {
+      const options: RazorpayOptions = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: parseFloat(amount!) * 100,
         currency: "INR",
         name: "FrameFusion",
         description: "Payment for FrameFusion subscription",
         order_id: idRef.current,
-        handler: async (response: any) => {
+        handler: async (response: RazorpayResponse) => {
           const data = {
             orderCreationId: idRef.current,
             razorpayPaymentId: response.razorpay_payment_id,
@@ -73,7 +99,7 @@ function CheckoutContent() {
       };
 
       const paymentObject = new (window as any).Razorpay(options);
-      paymentObject.on("payment.failed", function (response: any) {
+      paymentObject.on("payment.failed", function (response: RazorpayError) {
         alert(response.error.description);
       });
       paymentObject.open();
