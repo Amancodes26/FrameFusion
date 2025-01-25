@@ -4,31 +4,172 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
+import { toast } from "sonner";
 
-export default function Create() {
+const NSFW_WORDS = [
+  // Explicit Content
+  "nsfw", "nude", "naked", "xxx", "porn", "pornographic", "adult content",
+  
+  // Body Parts
+  "breasts", "boobs", "tits", "nipples", "cleavage",
+  "penis", "dick", "cock", "phallus",
+  "vagina", "pussy", "cunt",
+  "ass", "butt", "buttocks", "anus",
+  "genitals", "genitalia", "private parts",
+  "armpit", "crotch", "groin",
+  
+  // Actions & States
+  "sex", "sexy", "sexual", "erotic", "aroused", "arousing",
+  "fucking", "fuck", "fucked",
+  "masturbate", "masturbation",
+  "orgasm", "cum", "cumming",
+  "horny", "aroused", "lewd",
+  "strip", "striptease", "undress",
+  
+  // Clothing Related
+  "lingerie", "thong", "bikini", "underwear",
+  "topless", "bottomless", "half-naked",
+  "revealing", "see-through",
+  
+  // Inappropriate Descriptors
+  "slutty", "whore", "bitch",
+  "kinky", "bondage", "bdsm",
+  "seductive", "sensual", "erotic",
+  
+  // Age-Related (Protection)
+  "small girl", "young girl", "little girl",
+  "underage", "minor", "teen", "teenage",
+  "loli", "shotacon", "jailbait",
+  
+  // Violence & Gore
+  "gore", "blood", "bloody",
+  "mutilation", "dismember",
+  "torture", "abuse",
+  
+  // Phrases
+  "take off clothes",
+  "remove clothing",
+  "without clothes",
+  "no clothes",
+  "barely covered",
+  "barely dressed",
+  "scantily clad",
+  
+  // Common Variations
+  "n*de", "n*ked", "s*x", "p*rn",
+  "b00bs", "t1ts", "d1ck",
+  
+  // Euphemisms
+  "making love", "doing it",
+  "adult fun", "adult play",
+  "pleasuring", "pleasure",
+  
+  // Context Words
+  "explicit", "inappropriate",
+  "18+", "adult only", "xxx",
+  "restricted content"
+];
+
+function normalizeText(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '')  // Remove special characters
+    .replace(/[0-9]/g, '')        // Remove numbers
+    .replace(/\s+/g, ' ')         // Normalize spaces
+    .trim();
+}
+
+function containsNSFW(text: string): boolean {
+  const normalizedText = normalizeText(text);
+  const words = normalizedText.split(' ');
+  
+  // Check each word and its variations
+  for (const word of words) {
+    // Check for direct matches
+    if (NSFW_WORDS.includes(word)) return true;
+    
+    // Check for partial matches (e.g., "pornographic" contains "porn")
+    if (NSFW_WORDS.some(nsfwWord => 
+      word.includes(nsfwWord) || nsfwWord.includes(word)
+    )) return true;
+  }
+
+  // Check for phrases and word combinations
+  for (let i = 0; i < words.length - 1; i++) {
+    const twoWordPhrase = `${words[i]} ${words[i + 1]}`;
+    const threeWordPhrase = i < words.length - 2 ? 
+      `${words[i]} ${words[i + 1]} ${words[i + 2]}` : '';
+
+    // Check common NSFW phrases
+    const phrases = [
+      'no clothes', 'take off', 'removed clothes', 'without clothes',
+      'not wearing', 'fully naked', 'get naked', 'show skin',
+      'remove dress', 'take clothes', 'wearing nothing', 'no dress',
+      'adult content', 'sexy girl', 'hot girl', 'nsfw content'
+    ];
+
+    if (phrases.some(phrase => 
+      twoWordPhrase.includes(phrase) || 
+      threeWordPhrase.includes(phrase)
+    )) return true;
+  }
+
+  // Additional pattern checks
+  const patterns = [
+    /n+\s*[s5]\s*f+\s*w+/i,      // Matches "nsfw" with variations
+    /p+\s*[o0]\s*r+\s*n+/i,      // Matches "porn" with variations
+    /s+\s*[e3]\s*x+/i,           // Matches "sex" with variations
+    /n+\s*[u4]\s*d+\s*[e3]/i,    // Matches "nude" with variations
+    /b+\s*[o0]{2}\s*b+s*/i,     // Matches "boobs" with variations
+  ];
+
+  if (patterns.some(pattern => pattern.test(text))) return true;
+
+  return false;
+}
+
+export default function CreatePage() {
   const [prompt, setPrompt] = useState("");
   const [image, setImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const generateImage = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    if (!prompt) {
+      toast.info("Please enter a prompt to generate an image");
+      return;
+    }
+
+    if (containsNSFW(prompt)) {
+      setError("Your prompt contains inappropriate content");
+      toast.error("NSFW content is not allowed");
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      setLoading(true);
-      const response = await fetch("api/images", {
+      const response = await fetch("/api/images", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt }),
       });
 
       const data = await response.json();
 
-      if (response.status == 200) {
-        setImage(data.url);
-      } else {
-        setError(data.error);
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to generate image");
       }
-    } catch (error) {
-      console.error(error);
-      setError("An error occurred while generating the image.");
+
+      setImage(data.url);
+      toast.success("Image generated successfully!");
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -69,7 +210,7 @@ export default function Create() {
               className="h-12 text-base"
             />
             <Button
-              onClick={generateImage}
+              onClick={handleSubmit}
               disabled={!prompt || loading}
               className="h-12 px-6 font-medium"
             >

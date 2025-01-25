@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/Header";
 import Provider from "@/Provider";
 import { Toaster } from "@/components/ui/toaster";
+import { Toaster as SonnerToaster } from 'sonner';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,6 +43,7 @@ export default function RootLayout({
             <Header />
             {children}
             <Toaster />
+            <SonnerToaster richColors position="top-center" />
           </Provider>
         </ThemeProvider>
       </body>
