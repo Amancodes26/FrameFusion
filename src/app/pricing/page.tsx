@@ -20,6 +20,7 @@ interface PricingCardProps {
   features: string[];
   actionLabel: string;
   popular?: boolean;
+  actionDisabled?: boolean;
 }
 
 const PricingCard = ({
@@ -29,6 +30,7 @@ const PricingCard = ({
   features,
   actionLabel,
   popular,
+  actionDisabled,
 }: PricingCardProps) => {
   return (
     <Card className={cn(
@@ -60,15 +62,21 @@ const PricingCard = ({
         ))}
       </CardContent>
       <CardFooter className="pt-4 pb-8">
-        <Button 
-          className={cn(
-            "w-full text-base font-semibold py-6",
-            popular && "bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500"
-          )} 
-          asChild
-        >
-          <Link href={`/checkout?amount=${price}`}>{actionLabel}</Link>
-        </Button>
+        {actionDisabled ? (
+          <Button className="w-full text-base font-semibold py-6" disabled>
+            {actionLabel}
+          </Button>
+        ) : (
+          <Button 
+            className={cn(
+              "w-full text-base font-semibold py-6",
+              popular && "bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500"
+            )} 
+            asChild
+          >
+            <Link href={`/checkout?amount=${price}`}>{actionLabel}</Link>
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );
@@ -86,7 +94,8 @@ export default function Page() {
         "Standard support",
         "Access to essential tools",
       ],
-      actionLabel: "Start with Basic",
+      actionLabel: "Activated",
+      actionDisabled: true,
     },
     {
       title: "Pro",
@@ -100,6 +109,7 @@ export default function Page() {
       ],
       actionLabel: "Upgrade to Pro",
       popular: true,
+      actionDisabled: false,
     }
   ];
 
