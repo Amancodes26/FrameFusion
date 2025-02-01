@@ -21,8 +21,14 @@ export default function Header() {
         <h2 className="font-bold text-xl">FrameFusion</h2>
       </Link>
       <div className="flex justify-center items-center gap-8">
+        <Link href={"/"}>
+          <h2 className="font-bold"> Home </h2>
+        </Link>
         <Link href="/pricing">
           <h2 className="font-bold  ">Pricing</h2>
+        </Link>
+        <Link href="/about">
+          <h2 className="font-bold  ">About</h2>
         </Link>
       </div>
       {initialLoading && status == "loading" ? (
