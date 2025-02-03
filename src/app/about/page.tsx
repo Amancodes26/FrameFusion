@@ -1,6 +1,6 @@
 "use client"
 import React from 'react'
-import Image from 'next/image'
+// import Image from 'next/image'
 import { Github, Mail, Globe } from 'lucide-react'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
