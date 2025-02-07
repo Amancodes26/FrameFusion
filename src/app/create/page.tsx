@@ -1,135 +1,24 @@
 "use client";
 import { useState } from "react";
+import { containsRestrictedContent } from "@/lib/content-safety"; // Updated import
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Info } from "lucide-react";
 import { toast } from "sonner";
-
-const NSFW_WORDS = [
-  // Explicit Content
-  "nsfw", "nude", "naked", "xxx", "porn", "pornographic", "adult content",
-  
-  // Body Parts
-  "breasts", "boobs", "tits", "nipples", "cleavage",
-  "penis", "dick", "cock", "phallus",
-  "vagina", "pussy", "cunt",
-  "ass", "butt", "buttocks", "anus",
-  "genitals", "genitalia", "private parts",
-  "armpit", "crotch", "groin",
-  
-  // Actions & States
-  "sex", "sexy", "sexual", "erotic", "aroused", "arousing",
-  "fucking", "fuck", "fucked",
-  "masturbate", "masturbation",
-  "orgasm", "cum", "cumming",
-  "horny", "aroused", "lewd",
-  "strip", "striptease", "undress",
-  
-  // Clothing Related
-  "lingerie", "thong", "bikini", "underwear",
-  "topless", "bottomless", "half-naked",
-  "revealing", "see-through",
-  
-  // Inappropriate Descriptors
-  "slutty", "whore", "bitch",
-  "kinky", "bondage", "bdsm",
-  "seductive", "sensual", "erotic",
-  
-  // Age-Related (Protection)
-  "small girl", "young girl", "little girl",
-  "underage", "minor", "teen", "teenage",
-  "loli", "shotacon", "jailbait",
-  
-  // Violence & Gore
-  "gore", "blood", "bloody",
-  "mutilation", "dismember",
-  "torture", "abuse",
-  
-  // Phrases
-  "take off clothes",
-  "remove clothing",
-  "without clothes",
-  "no clothes",
-  "barely covered",
-  "barely dressed",
-  "scantily clad",
-  
-  // Common Variations
-  "n*de", "n*ked", "s*x", "p*rn",
-  "b00bs", "t1ts", "d1ck",
-  
-  // Euphemisms
-  "making love", "doing it",
-  "adult fun", "adult play",
-  "pleasuring", "pleasure",
-  
-  // Context Words
-  "explicit", "inappropriate",
-  "18+", "adult only", "xxx",
-  "restricted content"
-];
-
-function normalizeText(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, '')  // Remove special characters
-    .replace(/[0-9]/g, '')        // Remove numbers
-    .replace(/\s+/g, ' ')         // Normalize spaces
-    .trim();
-}
-
-function containsNSFW(text: string): boolean {
-  const normalizedText = normalizeText(text);
-  const words = normalizedText.split(' ');
-  
-  // Check each word and its variations
-  for (const word of words) {
-    // Check for direct matches
-    if (NSFW_WORDS.includes(word)) return true;
-    
-    // Check for partial matches (e.g., "pornographic" contains "porn")
-    if (NSFW_WORDS.some(nsfwWord => 
-      word.includes(nsfwWord) || nsfwWord.includes(word)
-    )) return true;
-  }
-
-  // Check for phrases and word combinations
-  for (let i = 0; i < words.length - 1; i++) {
-    const twoWordPhrase = `${words[i]} ${words[i + 1]}`;
-    const threeWordPhrase = i < words.length - 2 ? 
-      `${words[i]} ${words[i + 1]} ${words[i + 2]}` : '';
-
-    // Check common NSFW phrases
-    const phrases = [
-      'no clothes', 'take off', 'removed clothes', 'without clothes',
-      'not wearing', 'fully naked', 'get naked', 'show skin',
-      'remove dress', 'take clothes', 'wearing nothing', 'no dress',
-      'adult content', 'sexy girl', 'hot girl', 'nsfw content'
-    ];
-
-    if (phrases.some(phrase => 
-      twoWordPhrase.includes(phrase) || 
-      threeWordPhrase.includes(phrase)
-    )) return true;
-  }
-
-  // Additional pattern checks
-  const patterns = [
-    /n+\s*[s5]\s*f+\s*w+/i,      // Matches "nsfw" with variations
-    /p+\s*[o0]\s*r+\s*n+/i,      // Matches "porn" with variations
-    /s+\s*[e3]\s*x+/i,           // Matches "sex" with variations
-    /n+\s*[u4]\s*d+\s*[e3]/i,    // Matches "nude" with variations
-    /b+\s*[o0]{2}\s*b+s*/i,     // Matches "boobs" with variations
-  ];
-
-  if (patterns.some(pattern => pattern.test(text))) return true;
-
-  return false;
-}
+import type { ImageModel } from "@/types/image";
+import { MODEL_DESCRIPTIONS } from "@/types/image";
 
 export default function CreatePage() {
   const [prompt, setPrompt] = useState("");
+  const [model, setModel] = useState<ImageModel>("flux");
   const [image, setImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -143,8 +32,9 @@ export default function CreatePage() {
       return;
     }
 
-    if (containsNSFW(prompt)) {
-      setError("Your prompt contains inappropriate content");
+    const { isRestricted, matches } = containsRestrictedContent(prompt);
+    if (isRestricted) {
+      setError(`Your prompt contains inappropriate content: ${matches.join(", ")}`);
       toast.error("NSFW content is not allowed");
       return;
     }
@@ -155,7 +45,12 @@ export default function CreatePage() {
       const response = await fetch("/api/images", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ 
+          prompt,
+          model,
+          width: 1024,
+          height: 1024
+        }),
       });
 
       const data = await response.json();
@@ -200,19 +95,43 @@ export default function CreatePage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="flex gap-2"
+            className="space-y-4"
           >
-            <Input
-              placeholder="Describe the image you want to create..."
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              disabled={loading}
-              className="h-12 text-base"
-            />
+            <div className="flex gap-2">
+              <Input
+                placeholder="Describe the image you want to create..."
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                disabled={loading}
+                className="h-12 text-base"
+              />
+              <Select
+                value={model}
+                onValueChange={(value: ImageModel) => setModel(value)}
+                disabled={loading}
+              >
+                <SelectTrigger className="h-12 w-[120px]">
+                  <SelectValue placeholder="Select model" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(MODEL_DESCRIPTIONS).map(([key, desc]) => (
+                    <SelectItem key={key} value={key}>
+                      <div className="flex items-center gap-2">
+                        <span>{key}</span>
+                        <span title={desc}>
+                          <Info className="h-8 w-4" />
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             <Button
               onClick={handleSubmit}
               disabled={!prompt || loading}
-              className="h-12 px-6 font-medium"
+              className="w-full h-12 px-6 font-medium"
             >
               {loading ? (
                 <div className="flex items-center gap-2">
@@ -222,7 +141,7 @@ export default function CreatePage() {
               ) : (
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-4 h-4" />
-                  Generate
+                  Generate with {model}
                 </div>
               )}
             </Button>
