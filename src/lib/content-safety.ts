@@ -126,7 +126,7 @@ export function containsRestrictedContent(text: string): {
   }
 
   // Additional safety checks
-  const hasNumbers = /\d{2,}[\+]?/.test(text); // Check for age indicators
+  const hasNumbers = /\d{2,}[+]?/.test(text); // Removed unnecessary escape before +
   const hasSuspiciousChars = /[!@#$%^&*]/.test(text); // Check for suspicious characters
 
   return {
