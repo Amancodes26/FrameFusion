@@ -25,7 +25,20 @@ export const metadata: Metadata = {
     title: "FrameFusion - Free AI Image Generation",
     description:
       "Effortlessly generate high-quality images from text using FrameFusion's AI-powered tool.",
+    images: [
+      {
+        url: '/images/logo1.png',
+        width: 70,
+        height: 70,
+        alt: 'FrameFusion Logo',
+      }
+    ],
   },
+  icons: {
+    icon: '/images/logo1.png',
+    shortcut: '/images/logo1.png',
+    apple: '/images/logo1.png',
+  }
 };
 
 export default function RootLayout({
@@ -41,7 +54,9 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="dark">
           <Provider>
             <Header />
-            {children}
+            <main>
+              {children}
+            </main>
             <Toaster />
             <SonnerToaster richColors position="top-center" />
           </Provider>
