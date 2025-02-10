@@ -6,6 +6,7 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { BiLoaderCircle } from "react-icons/bi";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Image from "next/image";
+import { Star } from "lucide-react";
 
 export default function Header() {
   const [initialLoading, SetInitialLoading] = useState<boolean>(true);
@@ -20,7 +21,7 @@ export default function Header() {
     <div className=" fixed top-0 w-full h-[60px] bg-black border-b border-white/60 p-3 flex justify-between items-center">
       <Link href="/" className="flex items-center gap-2">
         <Image 
-          src="/images/logo1.png" // Changed from "/public/images/logo.png"
+          src="/images/logo1.png" 
           alt="FrameFusion" 
           width={50} 
           height={50}
@@ -37,6 +38,19 @@ export default function Header() {
         </Link>
         <Link href="/about">
           <h2 className="font-bold  ">About</h2>
+        </Link>
+        <Link 
+          href="https://github.com/Amancodes26/framefusion"
+          target="_blank"
+          className="relative group"
+        >
+          <div className="absolute -inset-2 bg-gradient-to-r from-pink-600 to-orange-500 rounded-lg blur opacity-30 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
+          <div className="relative flex items-center gap-2 px-4 py-2 bg-black border border-red-500-500 rounded-lg leading-none">
+            <Star className="w-4 h-4 text-yellow-400 animate-pulse" />
+            <span className="text-gray-200 group-hover:text-white transition duration-200">
+              Star on GitHub
+            </span>
+          </div>
         </Link>
       </div>
       {initialLoading && status == "loading" ? (
