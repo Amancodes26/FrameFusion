@@ -28,8 +28,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: '/images/logo1.png',
-        width: 40,
-        height: 40,
+        width: 20,
+        height: 20,
         alt: 'FrameFusion Logo',
       }
     ],
