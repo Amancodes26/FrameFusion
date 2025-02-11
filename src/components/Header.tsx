@@ -27,7 +27,7 @@ export default function Header() {
           height={50}
           className="rounded-lg"
         />
-        <h2 className="font-bold text-xl">FrameFusion</h2>
+        <h2 className="font-bold text-xl"></h2>
       </Link>
       <div className="flex justify-center items-center gap-8">
         <Link href={"/"}>
