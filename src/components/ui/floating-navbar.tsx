@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { Star, Menu, X } from "lucide-react";
+import { Star, Menu, X, Coins } from "lucide-react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { Button } from "./button";
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
@@ -83,6 +83,16 @@ export function FloatingNav() {
             </Link>
           ))}
           
+          {/* Add Credits Display before Github Star */}
+          {session?.user && (
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-amber-500/10 to-yellow-500/10 border border-amber-500/20 rounded-full">
+              <Coins className="h-4 w-4 text-amber-500" />
+              <span className="text-sm font-medium text-amber-500">
+                {session.user.credits} credits
+              </span>
+            </div>
+          )}
+
           <Link 
             href="https://github.com/Amancodes26/framefusion"
             target="_blank"
@@ -140,6 +150,16 @@ export function FloatingNav() {
               className="fixed inset-0 top-16 bg-background/95 backdrop-blur-sm lg:hidden z-40"
             >
               <div className="flex flex-col items-center gap-6 p-8">
+                {/* Add Credits Display at the top of mobile menu */}
+                {session?.user && (
+                  <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500/10 to-yellow-500/10 border border-amber-500/20 rounded-full">
+                    <Coins className="h-4 w-4 text-amber-500" />
+                    <span className="text-sm font-medium text-amber-500">
+                      {session.user.credits} credits
+                    </span>
+                  </div>
+                )}
+
                 {navItems.map((item) => (
                   <Link 
                     key={item.name} 
