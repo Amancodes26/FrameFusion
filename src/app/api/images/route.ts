@@ -12,37 +12,68 @@ export async function POST(request: NextRequest) {
       { status: 401 },
     );
   }
+
+  // Check if user has enough credits
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+  });
+
+  if (!user) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+
+  if (user.credits <= 0) {
+    return NextResponse.json(
+      { error: "Insufficient credits. Please upgrade your plan." },
+      { status: 403 }
+    );
+  }
+
   const { prompt } = await request.json();
 
-  const user = await prisma.user.findUnique({
-    where: {
-      id: session.user.id,
-    },
-  });
-  if (!user) {
-    return NextResponse.json({ error: "NO USER FOUND" }, { status: 401 });
-  }
+  try {
+    // Generate image...
+    function generateRandomNumber(): number {
+      return Math.floor(Math.random() * 100000000) + 1;
+    }
+    const randomSeed = generateRandomNumber();
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(
+      prompt,
+    )}?seed=${randomSeed}&width=512&height=512&noLogo=True`;
 
-  function generateRandomNumber(): number {
-    return Math.floor(Math.random() * 100000000) + 1;
-  }
-  const randomSeed = generateRandomNumber();
-  const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(
-    prompt,
-  )}?seed=${randomSeed}&width=512&height=512&noLogo=True`;
+    await fetch(imageUrl);
 
-  await fetch(imageUrl);
+    // Deduct credits and create post in a transaction
+    const updatedUser = await prisma.$transaction(async (tx) => {
+      // Create the post
+      await tx.post.create({
+        data: {
+          prompt: prompt,
+          url: imageUrl,
+          userId: session.user.id,
+          seed: randomSeed,
+        },
+      });
 
-  await prisma.post.create({
-    data: {
-      prompt: prompt,
+      // Update user credits
+      return await tx.user.update({
+        where: { id: session.user.id },
+        data: { credits: { decrement: 1 } },
+      });
+    });
+
+    return NextResponse.json({ 
       url: imageUrl,
-      userId: session.user.id,
-      seed: randomSeed,
-    },
-  });
-  return NextResponse.json({ url: imageUrl });
+      credits: updatedUser.credits 
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to generate image" },
+      { status: 500 }
+    );
+  }
 }
+
 export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session) {
