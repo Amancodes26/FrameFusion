@@ -15,8 +15,10 @@ import { Sparkles, Info } from "lucide-react";
 import { toast } from "sonner";
 import type { ImageModel } from "@/types/image";
 import { MODEL_DESCRIPTIONS } from "@/types/image";
+import { useSession } from "next-auth/react";
 
 export default function CreatePage() {
+  const { data: session, update: updateSession } = useSession();
   const [prompt, setPrompt] = useState("");
   const [model, setModel] = useState<ImageModel>("flux");
   const [image, setImage] = useState<string | null>(null);
@@ -26,6 +28,16 @@ export default function CreatePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (!session?.user) {
+      toast.error("Please sign in to generate images");
+      return;
+    }
+
+    if (session.user.credits <= 0) {
+      toast.error("Insufficient credits. Please upgrade your plan.");
+      return;
+    }
 
     if (!prompt) {
       toast.info("Please enter a prompt to generate an image");
@@ -60,6 +72,8 @@ export default function CreatePage() {
       }
 
       setImage(data.url);
+      // Update session with new credits
+      await updateSession();
       toast.success("Image generated successfully!");
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Something went wrong";

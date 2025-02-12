@@ -7,6 +7,7 @@ import { BiLoaderCircle } from "react-icons/bi";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Image from "next/image";
 import { Star } from "lucide-react";
+import CreditDisplay from './CreditDisplay';
 
 export default function Header() {
   const [initialLoading, SetInitialLoading] = useState<boolean>(true);
@@ -18,7 +19,7 @@ export default function Header() {
     }
   }, [status, session]);
   return (
-    <div className=" fixed top-0 w-full h-[60px] bg-black border-b border-white/60 p-3 flex justify-between items-center">
+    <div className="fixed top-0 w-full h-[70px] bg-background/60 backdrop-blur-xl border-b border-white/10 p-3 flex justify-between items-center z-50">
       <Link href="/" className="flex items-center gap-2">
         <Image 
           src="/images/logo1.png" 
@@ -53,23 +54,26 @@ export default function Header() {
           </div>
         </Link>
       </div>
-      {initialLoading && status == "loading" ? (
-        <BiLoaderCircle className="animate-spin" />
-      ) : !session ? (
-        <div className="_menu">
-          <Button onClick={() => signIn("google")}>Login</Button>
-        </div>
-      ) : (
-        <div className="flex gap-3 justify-center items-center">
-          <Button onClick={() => signOut()}>Logout</Button>
-          <Link href={"/profile"}>
-            <Avatar>
-              <AvatarImage src={session.user?.image || ""} />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-          </Link>
-        </div>
-      )}
+      <div className="flex items-center gap-4">
+        {session && <CreditDisplay />}
+        {initialLoading && status == "loading" ? (
+          <BiLoaderCircle className="animate-spin" />
+        ) : !session ? (
+          <div className="_menu">
+            <Button onClick={() => signIn("google")}>Login</Button>
+          </div>
+        ) : (
+          <div className="flex gap-4 justify-center items-center">
+            <Button onClick={() => signOut()}>Logout</Button>
+            <Link href={"/profile"}>
+              <Avatar>
+                <AvatarImage src={session.user?.image || ""} />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            </Link>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
