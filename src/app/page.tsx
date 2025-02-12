@@ -2,7 +2,6 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ImageShowcase } from "@/components/home/ImageShowcase";
 import { Sparkles } from "lucide-react";
 import { FloatingNav } from "@/components/ui/floating-navbar";
 import { ImageCarousel } from "@/components/home/ImageCarousel";
