@@ -66,7 +66,8 @@ export async function POST(request: NextRequest) {
       url: imageUrl,
       credits: updatedUser.credits 
     });
-  } catch (error) {
+  } catch (err) {
+    console.error('Image generation failed:', err);
     return NextResponse.json(
       { error: "Failed to generate image" },
       { status: 500 }
