@@ -85,56 +85,53 @@ export default function CreatePage() {
   };
 
   return (
-    <div className="container max-w-5xl mx-auto px-4 py-16">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-black py-16 px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="space-y-8"
+        className="space-y-12 max-w-5xl mx-auto"
       >
         {/* Header Section */}
         <div className="text-center space-y-4">
-          <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-white to-white/75 bg-clip-text text-transparent">
-            Create Your Image
+          <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">
+            AI Image Creation
           </h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Transform your ideas into stunning visuals using our AI-powered
-            image generation
+          <p className="text-gray-400 max-w-2xl mx-auto text-lg">
+            Transform your ideas into stunning visuals using our advanced AI image generation
           </p>
         </div>
 
         {/* Input Section */}
-        <div className="max-w-2xl mx-auto space-y-4">
+        <div className="max-w-2xl mx-auto space-y-6">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="space-y-4"
+            className="space-y-4 backdrop-blur-xl bg-white/5 p-6 rounded-2xl border border-white/10"
           >
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <Input
-                placeholder="Describe the image you want to create..."
+                placeholder="Describe your imagination..."
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 disabled={loading}
-                className="h-12 text-base"
+                className="h-14 text-base bg-black/40 border-white/10 focus:border-white/20 text-white placeholder:text-gray-400"
               />
               <Select
                 value={model}
                 onValueChange={(value: ImageModel) => setModel(value)}
                 disabled={loading}
               >
-                <SelectTrigger className="h-12 w-[120px]">
-                  <SelectValue placeholder="Select model" />
+                <SelectTrigger className="h-14 w-[140px] bg-black/40 border-white/10 focus:border-white/20">
+                  <SelectValue placeholder="Model" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-gray-900 border-white/10">
                   {Object.entries(MODEL_DESCRIPTIONS).map(([key, desc]) => (
-                    <SelectItem key={key} value={key}>
+                    <SelectItem key={key} value={key} className="hover:bg-white/5">
                       <div className="flex items-center gap-2">
-                        <span>{key}</span>
-                        <span title={desc}>
-                          <Info className="h-8 w-4" />
-                        </span>
+                        <span className="capitalize">{key}</span>
+                        <Info className="h-4 w-4 text-gray-400" title={desc} />
                       </div>
                     </SelectItem>
                   ))}
@@ -145,16 +142,16 @@ export default function CreatePage() {
             <Button
               onClick={handleSubmit}
               disabled={!prompt || loading}
-              className="w-full h-12 px-6 font-medium"
+              className="w-full h-14 px-6 font-medium bg-gradient-to-r from-white/10 to-white/5 hover:from-white/20 hover:to-white/10 border border-white/10 transition-all duration-300"
             >
               {loading ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                  Creating...
+                <div className="flex items-center gap-3">
+                  <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                  Creating Your Masterpiece...
                 </div>
               ) : (
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4" />
+                <div className="flex items-center gap-3">
+                  <Sparkles className="w-5 h-5" />
                   Generate with {model}
                 </div>
               )}
@@ -166,7 +163,7 @@ export default function CreatePage() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="p-4 bg-destructive/10 text-destructive rounded-lg text-center"
+              className="p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-center backdrop-blur-sm"
             >
               {error}
             </motion.div>
@@ -179,10 +176,10 @@ export default function CreatePage() {
           className="max-w-2xl mx-auto rounded-2xl overflow-hidden"
         >
           {loading && (
-            <div className="aspect-square bg-card/50 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+            <div className="aspect-square bg-black/40 backdrop-blur-xl rounded-2xl border border-white/10 flex items-center justify-center">
               <div className="flex flex-col items-center gap-4">
-                <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-                <p className="text-muted-foreground animate-pulse">
+                <div className="w-16 h-16 border-4 border-white/10 border-t-white rounded-full animate-spin" />
+                <p className="text-gray-400 animate-pulse">
                   Creating your masterpiece...
                 </p>
               </div>
@@ -194,15 +191,15 @@ export default function CreatePage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
-              className="relative aspect-square bg-card/50 backdrop-blur-sm rounded-1xl overflow-hidden"
+              className="relative aspect-square rounded-2xl overflow-hidden border border-white/10"
             >
               <img
                 src={image}
                 alt={prompt}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300">
-                <div className="absolute bottom-0 left-0 right-0 p-4">
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 hover:opacity-100 transition-all duration-300">
+                <div className="absolute bottom-0 left-0 right-0 p-6 backdrop-blur-sm bg-black/30">
                   <p className="text-white/90 text-sm line-clamp-2">{prompt}</p>
                 </div>
               </div>
