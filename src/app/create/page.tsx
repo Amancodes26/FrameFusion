@@ -87,15 +87,15 @@ export default function CreatePage() {
   };
 
   return (
-    <div className="container max-w-5xl mx-auto px-4 py-16">
+    <div className="container max-w-5xl mx-auto px-4 py-24"> {/* Changed py-16 to py-24 */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="space-y-8"
+        className="space-y-12" // Changed space-y-8 to space-y-12
       >
         {/* Header Section */}
-        <div className="text-center space-y-4">
+        <div className="text-center space-y-8 mb-8"> {/* Changed space-y-7 to space-y-8 and added mb-8 */}
           <h1 className="text-4xl sm:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 pb-2">
             Transform Your Imagination
           </h1>
