@@ -31,6 +31,7 @@ model Post {
   prompt    String
   url       String
   seed      Int
+  model     String   @default("Flux")
   User      User     @relation(fields: [userId], references: [id])
   userId    String
   createdAt DateTime @default(now())
