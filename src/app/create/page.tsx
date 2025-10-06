@@ -11,12 +11,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { motion } from "framer-motion";
-import { Sparkles, Info, Download } from "lucide-react";
+import { Sparkles, Info, Download, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import type { ImageModel } from "@/types/image";
 import { MODEL_DESCRIPTIONS } from "@/types/image";
 import { useSession } from "next-auth/react";
 import { ModelInfoSidebar } from "@/components/ui/model-info-sidebar";
+import { ShareModal } from "@/components/ui/share-modal";
 
 export default function CreatePage() {
   const { data: session, update: updateSession } = useSession();
@@ -26,6 +27,16 @@ export default function CreatePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedModel, setSelectedModel] = useState<ImageModel | null>(null);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [generatedPostId, setGeneratedPostId] = useState<string | null>(null);
+
+  const openShareModal = () => {
+    setShareModalOpen(true);
+  };
+
+  const closeShareModal = () => {
+    setShareModalOpen(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,6 +85,7 @@ export default function CreatePage() {
       }
 
       setImage(data.url);
+      setGeneratedPostId(data.postId); // Store the post ID for sharing
       // Update session with new credits
       await updateSession();
       toast.success("Image generated successfully!");
@@ -237,14 +249,26 @@ export default function CreatePage() {
                 <div className="absolute bottom-0 left-0 right-0 p-6 backdrop-blur-sm bg-black/30">
                   <div className="flex items-center justify-between">
                     <p className="text-white/90 text-sm line-clamp-2 flex-1">{prompt}</p>
-                    <Button
-                      onClick={downloadImage}
-                      size="sm"
-                      className="ml-4 bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm border border-white/20"
-                    >
-                      <Download className="h-4 w-4 mr-2" />
-                      Download
-                    </Button>
+                    <div className="flex gap-2 ml-4">
+                      <Button
+                        onClick={downloadImage}
+                        size="sm"
+                        className="bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm border border-white/20"
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Download
+                      </Button>
+                      {generatedPostId && (
+                        <Button
+                          onClick={openShareModal}
+                          size="sm"
+                          className="bg-gradient-to-r from-pink-600 to-orange-500 hover:opacity-90 text-white backdrop-blur-sm"
+                        >
+                          <Share2 className="h-4 w-4 mr-2" />
+                          Share
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -253,6 +277,17 @@ export default function CreatePage() {
         </motion.div>
         <ModelInfoSidebar selectedModel={selectedModel} />
       </motion.div>
+      
+      {/* Share Modal */}
+      {generatedPostId && image && (
+        <ShareModal
+          isOpen={shareModalOpen}
+          onClose={closeShareModal}
+          postId={generatedPostId}
+          prompt={prompt}
+          imageUrl={image}
+        />
+      )}
     </div>
   );
 }

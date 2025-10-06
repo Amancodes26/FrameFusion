@@ -45,9 +45,9 @@ export async function POST(request: NextRequest) {
     await fetch(imageUrl);
 
     // Deduct credits and create post in a transaction
-    const updatedUser = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
       // Create the post
-      await tx.post.create({
+      const post = await tx.post.create({
         data: {
           prompt: prompt,
           url: imageUrl,
@@ -58,15 +58,18 @@ export async function POST(request: NextRequest) {
       });
 
       // Update user credits
-      return await tx.user.update({
+      const updatedUser = await tx.user.update({
         where: { id: session.user.id },
         data: { credits: { decrement: 1 } },
       });
+
+      return { post, updatedUser };
     });
 
     return NextResponse.json({ 
       url: imageUrl,
-      credits: updatedUser.credits 
+      postId: result.post.id,
+      credits: result.updatedUser.credits 
     });
   } catch (err) {
     console.error('Image generation failed:', err);
