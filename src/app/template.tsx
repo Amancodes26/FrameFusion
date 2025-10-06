@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 
 export default function Template({ children }: { children: ReactNode }) {
   const path = usePathname();

@@ -68,6 +68,18 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+    /* Force dark theme colors for development */
+    background-color: hsl(0 0% 3.9%);
+    color: hsl(0 0% 98%);
+  }
+  
+  /* Ensure CSS variables are available immediately */
+  html {
+    color-scheme: dark;
+  }
+  
+  html.dark {
+    color-scheme: dark;
   }
 }
 

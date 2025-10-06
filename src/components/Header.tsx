@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { BiLoaderCircle } from "react-icons/bi";
@@ -10,12 +10,12 @@ import { Star } from "lucide-react";
 import CreditDisplay from './CreditDisplay';
 
 export default function Header() {
-  const [initialLoading, SetInitialLoading] = useState<boolean>(true);
+  const [initialLoading, setInitialLoading] = useState<boolean>(true);
   const { data: session, status } = useSession();
 
   useEffect(() => {
     if (status !== "loading") {
-      SetInitialLoading(false);
+      setInitialLoading(false);
     }
   }, [status, session]);
   return (

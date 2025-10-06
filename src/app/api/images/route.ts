@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { prompt } = await request.json();
+  const { prompt, model } = await request.json();
 
   try {
     // Generate image...
@@ -53,6 +53,7 @@ export async function POST(request: NextRequest) {
           url: imageUrl,
           userId: session.user.id,
           seed: randomSeed,
+          model: model,
         },
       });
 
