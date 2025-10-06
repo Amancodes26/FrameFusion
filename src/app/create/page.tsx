@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { motion } from "framer-motion";
-import { Sparkles, Info } from "lucide-react";
+import { Sparkles, Info, Download } from "lucide-react";
 import { toast } from "sonner";
 import type { ImageModel } from "@/types/image";
 import { MODEL_DESCRIPTIONS } from "@/types/image";
@@ -83,6 +83,27 @@ export default function CreatePage() {
       toast.error(errorMessage);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const downloadImage = async () => {
+    if (!image) return;
+    
+    try {
+      const response = await fetch(image);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `framefusion-${prompt.slice(0, 50).replace(/[^a-zA-Z0-9]/g, '-')}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      toast.success("Image downloaded successfully!");
+    } catch (error) {
+      toast.error("Failed to download image");
+      console.error('Download error:', error);
     }
   };
 
@@ -214,7 +235,17 @@ export default function CreatePage() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300">
                 <div className="absolute bottom-0 left-0 right-0 p-6 backdrop-blur-sm bg-black/30">
-                  <p className="text-white/90 text-sm line-clamp-2">{prompt}</p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-white/90 text-sm line-clamp-2 flex-1">{prompt}</p>
+                    <Button
+                      onClick={downloadImage}
+                      size="sm"
+                      className="ml-4 bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm border border-white/20"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Download
+                    </Button>
+                  </div>
                 </div>
               </div>
             </motion.div>

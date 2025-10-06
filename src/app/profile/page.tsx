@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Download } from "lucide-react";
+import { toast } from "sonner";
 
 export default function Page() {
   const { data: session, status } = useSession();
@@ -22,6 +24,25 @@ export default function Page() {
       console.error(error);
     } finally {
       setloading(false);
+    }
+  };
+
+  const downloadImage = async (imageUrl: string, prompt: string) => {
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `framefusion-${prompt.slice(0, 50).replace(/[^a-zA-Z0-9]/g, '-')}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      toast.success("Image downloaded successfully!");
+    } catch (error) {
+      toast.error("Failed to download image");
+      console.error('Download error:', error);
     }
   };
 
@@ -99,6 +120,17 @@ export default function Page() {
                     className="object-cover transform group-hover:scale-105 transition-transform duration-500"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
+                  {/* Download button overlay */}
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                    <Button
+                      onClick={() => downloadImage(post.url, post.prompt)}
+                      size="sm"
+                      className="bg-primary/90 hover:bg-primary text-primary-foreground backdrop-blur-sm"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Download
+                    </Button>
+                  </div>
                 </div>
                 <div className="p-4 bg-gradient-to-b from-background/90 to-background border-t border-border/50">
                   <div className="space-y-2">
