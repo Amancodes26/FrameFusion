@@ -6,13 +6,26 @@ import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Download } from "lucide-react";
+import { Download, Share2 } from "lucide-react";
 import { toast } from "sonner";
+import { ShareModal } from "@/components/ui/share-modal";
 
 export default function Page() {
   const { data: session, status } = useSession();
   const [loading, setloading] = useState<boolean>(true);
   const [posts, setPosts] = useState<Post[]>([]);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+
+  const openShareModal = (post: Post) => {
+    setSelectedPost(post);
+    setShareModalOpen(true);
+  };
+
+  const closeShareModal = () => {
+    setShareModalOpen(false);
+    setSelectedPost(null);
+  };
 
   const fetchPosts = async () => {
     try {
@@ -120,8 +133,8 @@ export default function Page() {
                     className="object-cover transform group-hover:scale-105 transition-transform duration-500"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
-                  {/* Download button overlay */}
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                  {/* Action buttons overlay */}
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-2">
                     <Button
                       onClick={() => downloadImage(post.url, post.prompt)}
                       size="sm"
@@ -129,6 +142,14 @@ export default function Page() {
                     >
                       <Download className="h-4 w-4 mr-2" />
                       Download
+                    </Button>
+                    <Button
+                      onClick={() => openShareModal(post)}
+                      size="sm"
+                      className="bg-gradient-to-r from-pink-600 to-orange-500 hover:opacity-90 text-white backdrop-blur-sm"
+                    >
+                      <Share2 className="h-4 w-4 mr-2" />
+                      Share
                     </Button>
                   </div>
                 </div>
@@ -146,6 +167,17 @@ export default function Page() {
             ))
           )}
         </motion.div>
+      )}
+      
+      {/* Share Modal */}
+      {selectedPost && (
+        <ShareModal
+          isOpen={shareModalOpen}
+          onClose={closeShareModal}
+          postId={selectedPost.id}
+          prompt={selectedPost.prompt}
+          imageUrl={selectedPost.url}
+        />
       )}
     </div>
   );
