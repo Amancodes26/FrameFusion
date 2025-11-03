@@ -53,10 +53,11 @@ export async function POST(req: Request) {
       token,
       user,
     });
-  } catch (error: any) {
-    console.error("❌ Mobile Auth Error:", error.message);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+    console.error("❌ Mobile Auth Error:", errorMessage);
     return NextResponse.json(
-      { success: false, message: error.message },
+      { success: false, message: errorMessage },
       { status: 400 }
     );
   }
