@@ -18,27 +18,74 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FrameFusion - Generate Images for FREE",
+  metadataBase: new URL(process.env.NEXTAUTH_URL || 'https://framefusion.vercel.app'),
+  title: {
+    default: "FrameFusion - Free AI Image Generator | Create Stunning Visuals",
+    template: "%s | FrameFusion"
+  },
   description:
-    "Create stunning visuals effortlessly with FrameFusion. Use advanced AI models to transform your ideas into beautiful images for free!",
+    "Create stunning visuals effortlessly with FrameFusion. Use advanced AI models to transform your ideas into beautiful images for free! Generate AI art, illustrations, and photos in seconds.",
+  keywords: [
+    "AI image generator",
+    "free AI art",
+    "text to image",
+    "AI art generator",
+    "image generation",
+    "AI photos",
+    "create images with AI",
+    "FrameFusion",
+    "AI illustrations",
+    "free image generator"
+  ],
+  authors: [{ name: "FrameFusion" }],
+  creator: "FrameFusion",
+  publisher: "FrameFusion",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   openGraph: {
-    title: "FrameFusion - Free AI Image Generation",
+    type: "website",
+    locale: "en_US",
+    url: "/",
+    siteName: "FrameFusion",
+    title: "FrameFusion - Free AI Image Generator",
     description:
-      "Effortlessly generate high-quality images from text using FrameFusion's AI-powered tool.",
+      "Effortlessly generate high-quality images from text using FrameFusion's AI-powered tool. Create stunning visuals in seconds.",
     images: [
       {
         url: '/images/logo1.png',
-        width: 20,
-        height: 20,
-        alt: 'FrameFusion Logo',
+        width: 1200,
+        height: 630,
+        alt: 'FrameFusion - AI Image Generator',
       }
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "FrameFusion - Free AI Image Generator",
+    description: "Create stunning visuals effortlessly with AI. Transform your ideas into beautiful images for free!",
+    images: ['/images/logo1.png'],
+    creator: "@framefusion",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
   icons: {
     icon: '/images/logo1.png',
     shortcut: '/images/logo1.png',
     apple: '/images/logo1.png',
-  }
+  },
+  manifest: '/manifest.webmanifest',
 };
 
 export default function RootLayout({
@@ -49,6 +96,28 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebApplication',
+              name: 'FrameFusion',
+              description: 'AI-powered image generator that transforms text into stunning visuals',
+              url: process.env.NEXTAUTH_URL || 'https://framefusion.vercel.app',
+              applicationCategory: 'MultimediaApplication',
+              offers: {
+                '@type': 'Offer',
+                price: '0',
+                priceCurrency: 'USD',
+              },
+              creator: {
+                '@type': 'Organization',
+                name: 'FrameFusion',
+              },
+            }),
+          }}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
