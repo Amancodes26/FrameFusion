@@ -1,4 +1,4 @@
-"use client";
+import type { Metadata } from 'next';
 import {
   Card,
   CardContent,
@@ -11,6 +11,15 @@ import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+
+export const metadata: Metadata = {
+  title: "Pricing - Affordable AI Image Generation Credits",
+  description: "Choose from flexible credit packages for FrameFusion's AI image generator. Generate unlimited images with our affordable pricing plans starting at ₹9.",
+  openGraph: {
+    title: "FrameFusion Pricing - AI Image Generation Credits",
+    description: "Affordable credit packages for creating stunning AI-generated images. Pay only for what you need.",
+  },
+};
 
 interface PricingCardProps {
   title: string;
@@ -81,7 +90,7 @@ const PricingCard = ({
   );
 };
 
-export default function Page() {
+export default function PricingPage() {
   const plans = [
     {
       title: "Basic",
