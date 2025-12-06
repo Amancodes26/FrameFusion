@@ -1,7 +1,16 @@
-"use client"
+import type { Metadata } from 'next';
 import { Github, Mail, Globe } from 'lucide-react'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+
+export const metadata: Metadata = {
+  title: "About FrameFusion - Meet the Developer",
+  description: "Learn about FrameFusion's AI image generation technology and meet Aman Singh, the full stack developer behind this innovative platform.",
+  openGraph: {
+    title: "About FrameFusion - AI Image Generation Platform",
+    description: "Discover how FrameFusion uses cutting-edge AI to transform text into stunning visuals. Built by Aman Singh.",
+  },
+};
 
 export default function AboutPage() {
   return (
