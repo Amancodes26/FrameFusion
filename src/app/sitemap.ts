@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXTAUTH_URL || 'https://framefusion.vercel.app';
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://framefusionai.vercel.app';
 
   return [
     {

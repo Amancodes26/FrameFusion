@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXTAUTH_URL || 'https://framefusion.vercel.app'),
+  metadataBase: new URL(process.env.NEXTAUTH_URL || 'https://framefusionai.vercel.app'),
   title: {
     default: "FrameFusion - Free AI Image Generator | Create Stunning Visuals",
     template: "%s | FrameFusion"
@@ -104,7 +104,7 @@ export default function RootLayout({
               '@type': 'WebApplication',
               name: 'FrameFusion',
               description: 'AI-powered image generator that transforms text into stunning visuals',
-              url: process.env.NEXTAUTH_URL || 'https://framefusion.vercel.app',
+              url: process.env.NEXTAUTH_URL || 'https://framefusionai.vercel.app',
               applicationCategory: 'MultimediaApplication',
               offers: {
                 '@type': 'Offer',
