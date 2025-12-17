@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = `AI Art: ${post.prompt.substring(0, 60)}${post.prompt.length > 60 ? '...' : ''} - FrameFusion`;
   const description = `Check out this amazing AI-generated image created by ${post.User.name} using FrameFusion: "${post.prompt}"`;
   const imageUrl = post.url;
-  const shareUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/share/${shareId}`;
+  const shareUrl = `${process.env.NEXTAUTH_URL || "https://framefusionai.vercel.app"}/share/${shareId}`;
 
   return {
     title,

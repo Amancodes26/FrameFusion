@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const shareUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/share/${shareId}`;
+    const shareUrl = `${process.env.NEXTAUTH_URL || "https://framefusionai.vercel.app"}/share/${shareId}`;
 
     return NextResponse.json({
       shareId,
