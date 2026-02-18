@@ -32,17 +32,35 @@ export async function POST(request: NextRequest) {
   const { prompt, model } = await request.json();
 
   try {
-    // Generate image...
+    // Generate image using new Pollinations API with authentication
     function generateRandomNumber(): number {
       return Math.floor(Math.random() * 100000000) + 1;
     }
     const randomSeed = generateRandomNumber();
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(
-    prompt
-  )}?seed=${randomSeed}&width=512&height=512&nologo=True`;
+    const apiKey = process.env.POLLINATIONS_API_KEY;
+    
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: "API key not configured" },
+        { status: 500 }
+      );
+    }
 
+    // New API endpoint structure
+    const imageUrl = `https://gen.pollinations.ai/image/${encodeURIComponent(
+      prompt
+    )}?seed=${randomSeed}&width=512&height=512&nologo=true&model=${model || 'flux'}`;
 
-    await fetch(imageUrl);
+    // Fetch with authentication header
+    const response = await fetch(imageUrl, {
+      headers: {
+        'Authorization': `Bearer ${apiKey}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Image generation failed: ${response.statusText}`);
+    }
 
     // Deduct credits and create post in a transaction
     const result = await prisma.$transaction(async (tx) => {
