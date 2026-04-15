@@ -4,6 +4,17 @@ import { authOptions } from "@/utils/authOptions";
 import prisma from "@/utils/prisma";
 import { nanoid } from "nanoid";
 
+function getBaseUrl(request: NextRequest): string {
+  const forwardedHost = request.headers.get("x-forwarded-host");
+  const forwardedProto = request.headers.get("x-forwarded-proto") || "https";
+
+  if (forwardedHost) {
+    return `${forwardedProto}://${forwardedHost}`;
+  }
+
+  return request.nextUrl.origin || process.env.NEXTAUTH_URL || "https://framefusionai.vercel.app";
+}
+
 // POST: Create or update share link for a post
 export async function POST(request: NextRequest) {
   try {
@@ -52,7 +63,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const shareUrl = `${process.env.NEXTAUTH_URL || "https://framefusionai.vercel.app"}/share/${shareId}`;
+    const shareUrl = `${getBaseUrl(request)}/share/${shareId}`;
 
     return NextResponse.json({
       shareId,

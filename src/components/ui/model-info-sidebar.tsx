@@ -1,7 +1,7 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import { ImageModel } from "@/types/image";
-import { Info, Stars, Zap, Sparkles, Layers, Palette, Camera } from "lucide-react";
+import { Info, Stars, Zap, Sparkles, Layers, Camera } from "lucide-react";
 
 const MODEL_DETAILS: Record<ImageModel, {
   icon: React.ReactNode;
@@ -12,45 +12,38 @@ const MODEL_DETAILS: Record<ImageModel, {
 }> = {
   'flux': {
     icon: <Stars className="w-6 h-6 text-blue-500" />,
-    title: "Flux - General Purpose",
-    description: "Versatile model suitable for most types of images",
-    strengths: ["Balanced quality", "Wide subject range", "Good details"],
+    title: "Flux",
+    description: "Fast and reliable text-to-image model for most prompts",
+    strengths: ["Fast generation", "Reliable output", "Great default model"],
+    speed: "Fast"
+  },
+  'kontext': {
+    icon: <Layers className="w-6 h-6 text-cyan-500" />,
+    title: "Kontext",
+    description: "Strong prompt adherence with in-context composition",
+    strengths: ["Prompt fidelity", "Composition control", "Consistent style"],
     speed: "Medium"
   },
-  'flux-realism': {
+  'gptimage': {
     icon: <Camera className="w-6 h-6 text-green-500" />,
-    title: "Flux Realism",
-    description: "Specialized in photorealistic outputs",
-    strengths: ["Photorealistic results", "Natural lighting", "Texture detail"],
-    speed: "Slow"
-  },
-  'any-dark': {
-    icon: <Palette className="w-6 h-6 text-purple-500" />,
-    title: "Dark Artistic",
-    description: "Perfect for moody and dramatic artistic styles",
-    strengths: ["Dramatic lighting", "Dark themes", "Artistic flair"],
+    title: "GPT Image",
+    description: "High quality output with strong realism",
+    strengths: ["Photorealism", "High detail", "Natural textures"],
     speed: "Medium"
   },
-  'flux-anime': {
-    icon: <Sparkles className="w-6 h-6 text-pink-500" />,
-    title: "Anime Style",
-    description: "Specialized in anime and manga-style illustrations",
-    strengths: ["Anime aesthetics", "Character design", "Stylized art"],
-    speed: "Fast"
-  },
-  'flux-3d': {
-    icon: <Layers className="w-6 h-6 text-orange-500" />,
-    title: "3D Graphics",
-    description: "Optimized for 3D-style rendered images",
-    strengths: ["3D rendering", "Depth perception", "Material simulation"],
-    speed: "Slow"
-  },
-  'turbo': {
+  'zimage': {
     icon: <Zap className="w-6 h-6 text-yellow-500" />,
-    title: "Turbo - Quick Gen",
-    description: "Fastest generation with good quality balance",
-    strengths: ["Quick results", "Good quality", "Efficient processing"],
+    title: "Z-Image",
+    description: "Turbo-like fast model with upscaled output",
+    strengths: ["Very fast", "Good sharpness", "Great for iterations"],
     speed: "Fast"
+  },
+  'klein': {
+    icon: <Sparkles className="w-6 h-6 text-orange-500" />,
+    title: "Klein",
+    description: "Balanced creative model with clean details",
+    strengths: ["Creative outputs", "Balanced quality", "Versatile scenes"],
+    speed: "Medium"
   }
 };
 

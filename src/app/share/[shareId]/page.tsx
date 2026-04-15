@@ -7,6 +7,16 @@ interface Props {
   params: Promise<{ shareId: string }>;
 }
 
+const GEN_POLLINATIONS_PREFIX = "https://gen.pollinations.ai/image/";
+
+function toProxyImageUrl(imageUrl: string): string {
+  if (!imageUrl.startsWith(GEN_POLLINATIONS_PREFIX)) {
+    return imageUrl;
+  }
+
+  return `/api/images/proxy?url=${encodeURIComponent(imageUrl)}`;
+}
+
 async function getSharedPost(shareId: string) {
   try {
     const post = await prisma.post.findUnique({
@@ -24,7 +34,14 @@ async function getSharedPost(shareId: string) {
       },
     });
 
-    return post;
+    if (!post) {
+      return null;
+    }
+
+    return {
+      ...post,
+      url: toProxyImageUrl(post.url),
+    };
   } catch (error) {
     console.error("Error fetching shared post:", error);
     return null;
@@ -44,8 +61,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const title = `AI Art: ${post.prompt.substring(0, 60)}${post.prompt.length > 60 ? '...' : ''} - FrameFusion`;
   const description = `Check out this amazing AI-generated image created by ${post.User.name} using FrameFusion: "${post.prompt}"`;
-  const imageUrl = post.url;
-  const shareUrl = `${process.env.NEXTAUTH_URL || "https://framefusionai.vercel.app"}/share/${shareId}`;
+  const baseUrl = process.env.NEXTAUTH_URL || "https://framefusionai.vercel.app";
+  const imageUrl = post.url.startsWith("http") ? post.url : `${baseUrl}${post.url}`;
+  const shareUrl = `${baseUrl}/share/${shareId}`;
 
   return {
     title,

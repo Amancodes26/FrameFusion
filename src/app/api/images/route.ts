@@ -1,9 +1,44 @@
 import { authOptions } from "@/utils/authOptions";
+import { ImageModel, LEGACY_MODEL_ALIASES, SUPPORTED_IMAGE_MODELS } from "@/types/image";
 import prisma from "@/utils/prisma";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export const maxDuration = 50;
+
+const DEFAULT_MODEL: ImageModel = "flux";
+const GEN_POLLINATIONS_PREFIX = "https://gen.pollinations.ai/image/";
+
+function resolveModel(model: unknown): ImageModel {
+  if (typeof model !== "string") return DEFAULT_MODEL;
+
+  const normalizedModel = model.trim().toLowerCase();
+
+  if (SUPPORTED_IMAGE_MODELS.includes(normalizedModel as ImageModel)) {
+    return normalizedModel as ImageModel;
+  }
+
+  return LEGACY_MODEL_ALIASES[normalizedModel] ?? DEFAULT_MODEL;
+}
+
+function resolveDimension(value: unknown, fallback: number): number {
+  const numericValue = typeof value === "number" ? value : Number(value);
+
+  if (!Number.isFinite(numericValue)) {
+    return fallback;
+  }
+
+  return Math.min(1536, Math.max(256, Math.round(numericValue)));
+}
+
+function toProxyImageUrl(imageUrl: string): string {
+  if (!imageUrl.startsWith(GEN_POLLINATIONS_PREFIX)) {
+    return imageUrl;
+  }
+
+  return `/api/images/proxy?url=${encodeURIComponent(imageUrl)}`;
+}
+
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session) {
@@ -29,16 +64,25 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { prompt, model } = await request.json();
+  const requestBody = await request.json();
+  const prompt = typeof requestBody.prompt === "string" ? requestBody.prompt.trim() : "";
+
+  if (!prompt) {
+    return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
+  }
+
+  const selectedModel = resolveModel(requestBody.model);
+  const width = resolveDimension(requestBody.width, 1024);
+  const height = resolveDimension(requestBody.height, 1024);
 
   try {
-    // Generate image using new Pollinations API with authentication
     function generateRandomNumber(): number {
       return Math.floor(Math.random() * 100000000) + 1;
     }
+
     const randomSeed = generateRandomNumber();
     const apiKey = process.env.POLLINATIONS_API_KEY;
-    
+
     if (!apiKey) {
       return NextResponse.json(
         { error: "API key not configured" },
@@ -46,20 +90,42 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // New API endpoint structure
-    const imageUrl = `https://gen.pollinations.ai/image/${encodeURIComponent(
+    const pollinationsUrl = `https://gen.pollinations.ai/image/${encodeURIComponent(
       prompt
-    )}?seed=${randomSeed}&width=512&height=512&nologo=true&model=${model || 'flux'}`;
+    )}?seed=${randomSeed}&width=${width}&height=${height}&nologo=true&model=${selectedModel}`;
 
-    // Fetch with authentication header
-    const response = await fetch(imageUrl, {
+    // Keep client-facing URL on this app domain while authenticating upstream requests.
+    const proxyImageUrl = `/api/images/proxy?url=${encodeURIComponent(pollinationsUrl)}`;
+
+    const response = await fetch(pollinationsUrl, {
+      cache: "no-store",
       headers: {
-        'Authorization': `Bearer ${apiKey}`
+        Authorization: `Bearer ${apiKey}`,
       }
     });
 
     if (!response.ok) {
-      throw new Error(`Image generation failed: ${response.statusText}`);
+      let apiErrorMessage = "Image generation failed";
+
+      try {
+        const errorPayload = await response.json();
+        apiErrorMessage =
+          errorPayload?.error?.message ||
+          errorPayload?.message ||
+          apiErrorMessage;
+      } catch {
+        // Ignore JSON parsing errors and use fallback message.
+      }
+
+      if (response.status === 402) {
+        apiErrorMessage = `${apiErrorMessage} (selected model may require paid balance)`;
+      }
+
+      if (response.status === 403) {
+        apiErrorMessage = `${apiErrorMessage} (selected model may not be enabled for your API key)`;
+      }
+
+      return NextResponse.json({ error: apiErrorMessage }, { status: response.status });
     }
 
     // Deduct credits and create post in a transaction
@@ -68,10 +134,10 @@ export async function POST(request: NextRequest) {
       const post = await tx.post.create({
         data: {
           prompt: prompt,
-          url: imageUrl,
+          url: proxyImageUrl,
           userId: session.user.id,
           seed: randomSeed,
-          model: model,
+          model: selectedModel,
         },
       });
 
@@ -85,7 +151,8 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({ 
-      url: imageUrl,
+      url: proxyImageUrl,
+      modelUsed: selectedModel,
       postId: result.post.id,
       credits: result.updatedUser.credits 
     });
@@ -124,5 +191,10 @@ export async function GET() {
     orderBy: { createdAt: "desc" },
   });
 
-  return NextResponse.json(posts);
+  const normalizedPosts = posts.map((post) => ({
+    ...post,
+    url: toProxyImageUrl(post.url),
+  }));
+
+  return NextResponse.json(normalizedPosts);
 }
